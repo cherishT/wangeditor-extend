@@ -1,0 +1,72 @@
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>test</title>
+    <style>
+      td {
+        height: 20px;
+      }
+      .area {
+        background-color: #edf5fa !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="editor"></div>
+    <div id="result"></div>
+
+    <script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+    <script src="https://unpkg.com/wangeditor/release/wangEditor.min.js"></script>
+    <script type="text/javascript">
+      $(function() {
+        var E = window.wangEditor;
+        var editor = new E("#editor");
+        editor.create();
+        editor.txt.html("<p>用 JS 设置的内容</p>");
+
+        var isSelecting = false;
+
+        // 单击任何区域，都要取消选中的单元格
+        $(document).mousedown(function(e) {
+          clearArea();
+        });
+
+        // 编辑器选择器
+        var editorSelector = "#editor";
+
+        // 鼠标按下事件
+        $(editorSelector).on("mousedown", "table", function(e) {
+          console.log("鼠标按下事件");
+          var x = e.clientX,
+            y = e.clientY;
+          $("#result").html("X:" + x + ";Y:" + y);
+          isSelecting = true;
+        });
+
+        // 鼠标弹起事件
+        $(editorSelector).on("mouseup", "table", function(e) {
+          console.log("鼠标弹起事件");
+          isSelecting = false;
+        });
+
+        // 鼠标移动事件
+        $(editorSelector).on("mousemove", "table", function(e) {
+          // 如果正在选中
+          if (!isSelecting) return;
+          console.log("鼠标移动事件");
+
+          if (e.target.tagName == "TD") {
+            $(e.target).addClass("area");
+          }
+        });
+      });
+
+      // 清除选中的单元格
+      function clearArea() {
+        $("#editor table")
+          .find(".area")
+          .removeClass("area");
+      }
+    </script>
+  </body>
+</html>
