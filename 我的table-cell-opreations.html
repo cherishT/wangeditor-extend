@@ -1,0 +1,133 @@
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>test</title>
+    <style>
+      td {
+        height: 20px;
+      }
+      .area {
+        background-color: #c5e0f1 !important;
+      }
+      #editor table {
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select: none;
+        -khtml-user-select: none;
+        user-select: element;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="editor"></div>
+    <div id="result"></div>
+
+    <script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+    <script src="https://unpkg.com/wangeditor/release/wangEditor.min.js"></script>
+    <script type="text/javascript">
+      $(function() {
+        var tableStr = `
+        <table id="myTable" class="myTable" border="1">
+          <tr>
+            <td rowspan="3">cell 3</td>
+            <td rowspan="2" colspan="2">cell 4</td>
+            <td>cell</td>
+            <td>cell</td>
+          </tr>
+          <tr>
+            <td>cell</td>
+            <td>cell</td>
+          </tr>
+          <tr>
+            <td>cell</td>
+            <td>cell</td>
+            <td>cell</td>
+            <td>cell</td>
+          </tr>
+        </table>`;
+
+        var tableStr2 = `
+        <table id="myTable" class="myTable" border="1">
+          <tr>
+            <td rowspan="3">cell 3</td>
+            <td rowspan="2" colspan="2">cell 4</td>
+            <td>cell</td>
+            <td>cell</td>
+          </tr>
+          <tr>
+            <td>cell</td>
+            <td>cell</td>
+          </tr>
+        </table>`;
+
+        var E = window.wangEditor;
+        var editor = new E("#editor");
+
+        // html 即变化之后的内容
+        editor.customConfig.onchange = function(html) {
+          // console.log(html);
+        };
+        editor.create();
+        editor.txt.html(tableStr);
+
+        var isSelecting = false;
+
+        // 单击任何区域，都要取消选中的单元格
+        $(document).mousedown(function(e) {
+          clearArea();
+        });
+
+        // 编辑器选择器
+        var editorSelector = "#editor";
+
+        // 追加的内容
+        $(editorSelector).on("click", "table", function(e) {
+          // $(this)
+          //   .parent()
+          //   .append(tableStr2);
+          // $(this).remove();
+        });
+
+        // 监听表格内容变化
+
+        //添加表格禁止选择样式和事件
+        // $(editorSelector).on("selectstart", "table", function() {
+        //   return false;
+        // });
+
+        // 鼠标按下事件
+        $(editorSelector).on("mousedown", "table", function(e) {
+          console.log("鼠标按下事件");
+          var x = e.clientX,
+            y = e.clientY;
+          $("#result").html("X:" + x + ";Y:" + y);
+          isSelecting = true;
+        });
+
+        // 鼠标弹起事件
+        $(editorSelector).on("mouseup", "table", function(e) {
+          console.log("鼠标弹起事件");
+          isSelecting = false;
+        });
+
+        // 鼠标移动事件
+        $(editorSelector).on("mousemove", "table", function(e) {
+          // 如果不是正在选中，则无需处理
+          if (!isSelecting) return;
+
+          console.log("鼠标移动事件");
+          if (e.target.tagName == "TD") {
+            $(e.target).addClass("area");
+          }
+        });
+      });
+
+      // 清除选中的单元格
+      function clearArea() {
+        $("#editor table")
+          .find(".area")
+          .removeClass("area");
+      }
+    </script>
+  </body>
+</html>
